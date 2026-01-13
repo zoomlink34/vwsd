@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JOIN THE LEGACY</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        body { background: #0B0E11; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .box { background: #1E2329; padding: 40px; border-radius: 15px; border: 1px solid #FCD535; text-align: center; width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        input { width: 90%; padding: 15px; margin: 10px 0; background: #2B3139; border: 1px solid #444; color: #fff; border-radius: 5px; outline: none; }
+        .btn { width: 100%; padding: 15px; background: #FCD535; color: #000; font-weight: 900; border: none; cursor: pointer; border-radius: 5px; }
+        #celeb { display: none; position: fixed; inset: 0; background: #000; z-index: 999; flex-direction: column; justify-content: center; align-items: center; }
+    </style>
+</head>
+<body>
+    <div class="box" id="f-box">
+        <h2 style="color:#FCD535">RESERVE YOUR PLOT</h2>
+        <input type="text" id="bn" placeholder="Your Brand Name">
+        <input type="number" id="pn" placeholder="Plot Number (1-5000)">
+        <button class="btn" onclick="submitOrder()">SUBMIT TO CEO</button>
+    </div>
+
+    <div id="celeb">
+        <h1 style="color:#FCD535; font-size: 50px; margin:0;">CONGRATULATIONS! 🎉</h1>
+        <h2 id="user-b" style="margin:20px 0; font-size: 35px;"></h2>
+        <p style="color:#aaa; font-size: 20px;">Your request is being processed. Welcome to the wall!</p>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <script>
+        firebase.initializeApp({databaseURL: "https://m-legacy-5cf2b-default-rtdb.firebaseio.com/"});
+        function submitOrder() {
+            const n = document.getElementById('bn').value, p = document.getElementById('pn').value;
+            if(!n || !p) return alert("Fill all info");
+            firebase.database().ref('orders/'+p).set({name:n, plotID:p}).then(() => {
+                document.getElementById('user-b').innerText = n;
+                document.getElementById('f-box').style.display='none';
+                document.getElementById('celeb').style.display='flex';
+                
+                // Intense Confetti
+                var end = Date.now() + 4000;
+                (function frame() {
+                    confetti({ particleCount: 20, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#FCD535','#fff','#ff9900'] });
+                    confetti({ particleCount: 20, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#FCD535','#fff','#ff9900'] });
+                    if (Date.now() < end) requestAnimationFrame(frame);
+                }());
+                setTimeout(()=> window.location.href="index.html", 4500);
+            });
+        }
+    </script>
+</body>
+</html>
