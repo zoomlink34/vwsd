@@ -1,0 +1,28 @@
+:root { --b-yellow: #FCD535; --b-dark: #1E2329; --b-bg: #0B0E11; }
+body { background: var(--b-bg); color: #EAECEF; font-family: 'Inter', sans-serif; margin: 0; text-align: center; }
+
+.top-nav { display: flex; justify-content: space-between; padding: 15px 5%; background: var(--b-dark); border-bottom: 1px solid #333; align-items: center; }
+.pill { padding: 8px 15px; border: 1px solid var(--b-yellow); color: var(--b-yellow); border-radius: 4px; font-size: 11px; cursor: pointer; margin-right: 5px; }
+.social-icons a { font-size: 20px; margin-left: 15px; text-decoration: none; }
+.fb { color: #1877F2; } .ig { color: #E4405F; } .tw { color: #1DA1F2; } .yt { color: #FF0000; } .tk { color: #fff; }
+
+.shimmer-title { 
+    font-size: 50px; font-weight: 900; 
+    background: linear-gradient(45deg, #FCD535, #fff, #FCD535, #ff9900);
+    background-size: 300%; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    animation: gradientMove 4s ease infinite; margin: 30px 0;
+}
+@keyframes gradientMove { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+
+.stats-row { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; }
+.stat-box { background: var(--b-dark); padding: 12px 25px; border-radius: 5px; border: 1px solid #333; font-weight: bold; }
+.stat-box.sold { color: #2ebd85; border-color: #2ebd85; }
+.stat-box.rem { color: var(--b-yellow); border-color: var(--b-yellow); }
+
+.map-container { width: 85%; max-width: 1100px; margin: 0 auto; border: 5px solid #333; border-radius: 10px; background: #000; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+#viewport { aspect-ratio: 16/9; pointer-events: none; }
+
+.cta-gold { background: var(--b-yellow); color: #000; padding: 18px 45px; border-radius: 8px; font-weight: 900; text-decoration: none; display: inline-block; margin: 10px; box-shadow: 0 4px 15px rgba(252, 213, 53, 0.3); }
+.cta-outline { border: 1px solid #5e6673; color: #EAECEF; padding: 18px 45px; border-radius: 8px; text-decoration: none; display: inline-block; margin: 10px; }
+
+.wa-float { position: fixed; bottom: 30px; right: 30px; background: #2ebd85; color: #fff; padding: 15px 30px; border-radius: 50px; text-decoration: none; font-weight: bold; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
