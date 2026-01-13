@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard | The 5K Legacy</title>
+    <style>
+        body { background: #0B0E11; color: #fff; font-family: sans-serif; text-align: center; padding: 50px; }
+        .card { background: #1E2329; border: 1px solid #FCD535; padding: 40px; border-radius: 15px; display: inline-block; width: 400px; }
+        input { width: 85%; padding: 15px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #444; background: #2B3139; color: #fff; }
+        .res { margin-top: 20px; padding: 15px; border-radius: 5px; display: none; background: #2B3139; text-align: left; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2 style="color: #FCD535;">ORDER DASHBOARD</h2>
+        <p>Enter your Plot Number to check history</p>
+        <input type="number" id="plotID" placeholder="Your Plot ID (1-5000)">
+        <button onclick="check()" style="width:95%; padding:15px; background: #FCD535; border:none; font-weight:bold; cursor:pointer;">CHECK RECORD</button>
+        <div id="resBox" class="res">
+            <h3 id="s"></h3>
+            <p id="m"></p>
+        </div>
+        <a href="index.html" style="display:block; margin-top:20px; color: #FCD535; text-decoration:none;">← BACK TO HOME</a>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <script>
+        firebase.initializeApp({databaseURL: "https://m-legacy-5cf2b-default-rtdb.firebaseio.com/"});
+        function check() {
+            const id = document.getElementById('plotID').value;
+            firebase.database().ref('notifications/'+id).once('value', s => {
+                const d = s.val();
+                if(!d) return alert("Pending CEO review...");
+                const box = document.getElementById('resBox');
+                box.style.display = 'block';
+                document.getElementById('s').innerText = "STATUS: " + d.status;
+                document.getElementById('s').style.color = d.status === "Approved" ? "#2ebd85" : "#ff4d4d";
+                document.getElementById('m').innerText = "MESSAGE: " + d.message;
+            });
+        }
+    </script>
+</body>
+</html>
