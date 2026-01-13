@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CEO ADMIN | MASTER CONTROL</title>
+    <style>
+        body { font-family: sans-serif; background: #f0f0f0; padding: 20px; }
+        .card { background: #fff; padding: 20px; margin-bottom: 20px; border-radius: 10px; border-left: 8px solid #FCD535; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .history { background: #000; color: #fff; padding: 20px; border-radius: 10px; margin-top: 50px; }
+        button { padding: 10px; cursor: pointer; border-radius: 5px; border: none; font-weight: bold; }
+        input { padding: 10px; width: 300px; margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <h1>CEO DASHBOARD - ACTIVE REQUESTS</h1>
+    <div id="order-list"></div>
+
+    <div class="history">
+        <h2>WALL HISTORY (Manage & Reset Plots)</h2>
+        <div id="wall-history"></div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <script>
+        firebase.initializeApp({databaseURL: "https://m-legacy-5cf2b-default-rtdb.firebaseio.com/"});
+        const db = firebase.database();
+
+        db.ref('orders').on('value', s => {
+            const list = document.getElementById('order-list'); list.innerHTML = "";
+            const data = s.val(); if(!data) return list.innerHTML = "No new orders.";
+            Object.keys(data).forEach(id => {
+                list.innerHTML += `<div class="card">
+                    <b>Plot: ${id}</b> | Brand: ${data[id].name} <br><br>
+                    <input type="text" id="img_${id}" placeholder="Logo Link (ImgBB)">
+                    <button onclick="approve('${id}', '${data[id].name}')" style="background:#2ebd85; color:white;">APPROVE LIVE</button>
+                    <button onclick="reject('${id}')" style="background:red; color:white; margin-left:10px;">REJECT</button>
+                </div>`;
+            });
+        });
+
+        db.ref('pixels').on('value', s => {
+            const hList = document.getElementById('wall-history'); hList.innerHTML = "";
+            const data = s.val(); if(!data) return;
+            Object.keys(data).forEach(id => {
+                hList.innerHTML += `<div style="border-bottom:1px solid #333; padding:10px; display:flex; justify-content:space-between;">
+                    <span>Plot ${id}: ${data[id].name}</span>
+                    <button onclick="deletePlot('${id}')" style="background:red; color:white;">RESET/EMPTY PLOT</button>
+                </div>`;
+            });
+        });
+
+        function approve(id, name) {
+            const img = document.getElementById('img_'+id).value;
+            if(!img) return alert("Logo Link?");
+            const x = ((id-1)%100)*40, y = Math.floor((id-1)/100)*25;
+            db.ref('pixels/'+id).set({name, imageUrl:img, x, y, plotID:id}).then(() => {
+                db.ref('notifications/'+id).set({status: "Approved", message: "Brand Live Successfully!"});
+                db.ref('orders/'+id).remove();
+            });
+        }
+        function reject(id) {
+            db.ref('notifications/'+id).set({status: "Rejected", message: "Invalid Payment/Info"}).then(()=> db.ref('orders/'+id).remove());
+        }
+        function deletePlot(id) {
+            if(confirm("Empty this plot?")) {
+                db.ref('pixels/'+id).remove();
+                db.ref('notifications/'+id).remove();
+            }
+        }
+    </script>
+</body>
+</html>
