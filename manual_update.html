@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CEO MANUAL PUBLISH | THE 5K LEGACY</title>
+    <style>
+        :root { --b-yellow: #FCD535; --b-dark: #1E2329; --b-bg: #0B0E11; }
+        body { background: var(--b-bg); color: #fff; font-family: 'Inter', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .manual-box { background: var(--b-dark); padding: 40px; border-radius: 15px; border: 1px solid var(--b-yellow); width: 400px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        h2 { color: var(--b-yellow); text-align: center; margin-bottom: 25px; text-transform: uppercase; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-size: 13px; color: #aaa; }
+        input { width: 100%; padding: 12px; background: #2B3139; border: 1px solid #444; color: #fff; border-radius: 5px; outline: none; box-sizing: border-box; }
+        input:focus { border-color: var(--b-yellow); }
+        .publish-btn { width: 100%; padding: 15px; background: var(--b-yellow); color: #000; font-weight: 900; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; transition: 0.3s; }
+        .publish-btn:hover { background: #e2c02e; transform: translateY(-2px); }
+        .note { font-size: 11px; color: #888; margin-top: 15px; text-align: center; line-height: 1.5; }
+        .back-home { display: block; text-align: center; margin-top: 20px; color: var(--b-yellow); text-decoration: none; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <div class="manual-box">
+        <h2>CEO Force Publish</h2>
+        
+        <div class="input-group">
+            <label>Brand Name</label>
+            <input type="text" id="brandName" placeholder="Enter Brand Name">
+        </div>
+
+        <div class="input-group">
+            <label>Logo Image URL (Direct Link)</label>
+            <input type="text" id="imageUrl" placeholder="https://example.com/logo.png">
+        </div>
+
+        <div class="input-group">
+            <label>Website Link (URL)</label>
+            <input type="text" id="webLink" placeholder="https://brand-website.com">
+        </div>
+
+        <div class="input-group">
+            <label>Plot Number (1 to 5000)</label>
+            <input type="number" id="plotID" placeholder="Example: 500">
+        </div>
+
+        <button class="publish-btn" onclick="manualPublish()">PUBLISH TO WALL LIVE</button>
+
+        <p class="note">Notice: Using this tool will bypass the order system and directly update the 5K Wall. The Plot ID must be between 1 and 5000.</p>
+        
+        <a href="index.html" class="back-home">← Back to Main Wall</a>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    
+    <script>
+        // Your Firebase Config (Same as script.js)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDgLYZLFCF8yi (your-key)",
+            authDomain: "m-legacy-5cf2b.firebaseapp.com",
+            databaseURL: "https://m-legacy-5cf2b-default-rtdb.firebaseio.com",
+            projectId: "m-legacy-5cf2b"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        function manualPublish() {
+            const name = document.getElementById('brandName').value;
+            const img = document.getElementById('imageUrl').value;
+            const link = document.getElementById('webLink').value;
+            const pid = parseInt(document.getElementById('plotID').value);
+
+            if (!name || !img || !pid) {
+                alert("Please fill Brand Name, Image URL, and Plot Number!");
+                return;
+            }
+
+            if (pid < 1 || pid > 5000) {
+                alert("Plot Number must be between 1 and 5000!");
+                return;
+            }
+
+            // ম্যাথমেটিক্যাল পজিশন ক্যালকুলেশন (৪০x২৫ গ্রিড অনুযায়ী)
+            const x = ((pid - 1) % 100) * 40;
+            const y = Math.floor((pid - 1) / 100) * 25;
+
+            // ডেটাবেসে সরাসরি পুশ করা
+            db.ref('pixels/' + pid).set({
+                name: name,
+                imageUrl: img,
+                link: link || "#", // যদি লিঙ্ক না থাকে তবে শুধু হ্যাশট্যাগ থাকবে
+                x: x,
+                y: y,
+                plotID: pid
+            }).then(() => {
+                // নোটিফিকেশন হিস্ট্রিতেও রেকর্ড রাখা
+                db.ref('notifications/' + pid).set({
+                    status: "Approved",
+                    message: "Manually published by CEO."
+                });
+                alert("Successfully Published! Brand '" + name + "' is now LIVE on Plot " + pid);
+                location.reload(); // ফর্মটি রিসেট করার জন্য
+            }).catch((error) => {
+                alert("Error: " + error.message);
+            });
+        }
+    </script>
+</body>
+</html>
